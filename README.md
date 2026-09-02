@@ -105,10 +105,10 @@ When orchestrating a restart of DustOps itself (`dustops-agent`), traditional to
 
 ## 🖥️ Triple-Interface Unified Control Matrix
 
-### 🌌 1. Cosmic Dust Web Matrix
-- **Visual Design:** High-performance, zero-dependency HTML5 Canvas particle engine rendering 1,400+ cosmic dust particles with interactive mouse-vortex and spring physics.
-- **Aesthetic:** Minimalist Zinc-950 (`#09090b`) dark luxury palette, translucent glassmorphism cards (`backdrop-filter: blur(20px)`), and Google `Inter` + `JetBrains Mono` typography.
-- **Functionality:** Real-time CPU, RAM, and Disk utilization gauges, live project cluster cards, and a Raycast-style command execution modal.
+### 🌐 1. Open-Ended Web Dashboard & API Matrix
+- **Modular & Extensible:** A lightweight, open-ended starter dashboard is served directly from `web/index.html`. Developers can easily customize the HTML or mount their own custom frontend framework (React, Vue, Svelte, Vite).
+- **Live Telemetry & Controls:** Directly communicates with the underlying `/metrics`, `/processes`, and `/projects` endpoints for real-time telemetry and management.
+- **REST & WebSocket Integration:** Allows headless integration into custom internal tooling and enterprise dashboards.
 
 ### 🤖 2. Discord DM Incident & Control Center
 - **Owner-Only Security:** All button callbacks, modals, and selects enforce `interaction.user.id == OWNER_USER_ID`.
