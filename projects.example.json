@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DustOps Projects Configuration Example",
+  "description": "Enterprise microservice and project mapping blueprint for DustOps Core Agent.",
+  "projects": [
+    {
+      "id": "web-frontend",
+      "name": "🌐 Production Web Portal",
+      "cwd": "/var/www/portal",
+      "services": [
+        {
+          "name": "Next.js SSR Frontend",
+          "match": "next-server",
+          "port": 3000,
+          "restart_cmd": "pm2 restart web-frontend"
+        }
+      ]
+    },
+    {
+      "id": "backend-cluster",
+      "name": "⚙️ Core REST API Cluster",
+      "cwd": "/opt/services/api",
+      "services": [
+        {
+          "name": "FastAPI / Gunicorn Workers",
+          "match": "gunicorn",
+          "port": 8081,
+          "restart_cmd": "systemctl restart api-backend"
+        }
+      ]
+    },
+    {
+      "id": "discord-infrastructure",
+      "name": "🤖 Community & Ops Bot Fleet",
+      "cwd": "/opt/bots/main",
+      "services": [
+        {
+          "name": "Primary Orchestration Bot",
+          "match": "bot.py",
+          "port": null,
+          "restart_cmd": "pm2 restart discord-bot"
+        }
+      ]
+    },
+    {
+      "id": "dustops",
+      "name": "🛡️ DustOps Self-Management",
+      "cwd": "/opt/DustOps",
+      "services": [
+        {
+          "name": "Core Agent Daemon",
+          "match": "run_agent.py",
+          "port": 4141,
+          "restart_cmd": "pm2 restart dustops-agent"
+        },
+        {
+          "name": "Discord DM Consumer",
+          "match": "run_bot.py",
+          "port": null,
+          "restart_cmd": "pm2 restart dustops-bot"
+        }
+      ]
+    }
+  ]
+}

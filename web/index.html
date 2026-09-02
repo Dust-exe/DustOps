@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DustOps — Systems & Infrastructure Matrix</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #09090b; /* zinc-950 */
+            --card-bg: rgba(18, 18, 22, 0.72);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-border-hover: rgba(168, 85, 247, 0.35);
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa; /* zinc-400 */
+            --text-muted: #71717a; /* zinc-500 */
+            --accent-purple: #a855f7;
+            --accent-magenta: #e879f9;
+            --accent-pink: #ec4899;
+            --emerald-green: #10b981;
+            --emerald-bg: rgba(16, 185, 129, 0.1);
+            --rose-red: #f43f5e;
+            --rose-bg: rgba(244, 63, 94, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        *::-webkit-scrollbar {
+            display: none !important;
+        }
+        * {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-primary);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            padding-bottom: 4rem;
+        }
+
+        /* Cosmic Dust Background Canvas */
+        #dust-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem;
+        }
+
+        /* Top Bar */
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 3.5rem;
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            backdrop-filter: blur(12px);
+        }
+
+        .brand-badge img {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+        }
+
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--emerald-green);
+            box-shadow: 0 0 10px var(--emerald-green);
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.9); }
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 14px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+            font-weight: 400;
+        }
+
+        .hero .gradient-typewriter {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #e879f9 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 3px;
+            height: 2.2rem;
+            background: #e879f9;
+            margin-left: 2px;
+            animation: cursorBlink 1s infinite;
+        }
+
+        @keyframes cursorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .hero p.desc {
+            max-width: 650px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.8rem;
+        }
+
+        /* Tech Pills */
+        .tech-pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            max-width: 780px;
+            margin-bottom: 3.5rem;
+        }
+
+        .tech-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .tech-pill:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        /* Metrics Grid */
+        .metrics-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.2rem 1.4rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: border-color 0.2s;
+        }
+
+        .metric-card:hover {
+            border-color: var(--card-border-hover);
+        }
+
+        .metric-card .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.6rem;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-card .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #fff;
+            margin-bottom: 0.6rem;
+        }
+
+        .metric-progress {
+            height: 5px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .metric-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 9999px;
+            background: linear-gradient(90deg, #a855f7, #e879f9);
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Section Title */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #fff;
+        }
+
+        /* Project Cards */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .project-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1.6rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            transition: border-color 0.25s, transform 0.25s;
+        }
+
+        .project-panel:hover {
+            border-color: var(--card-border-hover);
+        }
+
+        .project-panel-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.2rem;
+        }
+
+        .project-title-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .project-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.01em;
+        }
+
+        .project-cwd-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .health-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .health-healthy {
+            background: var(--emerald-bg);
+            color: var(--emerald-green);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .health-degraded {
+            background: var(--rose-bg);
+            color: var(--rose-red);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+        }
+
+        .btn-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.16);
+            transform: translateY(-1px);
+        }
+
+        .btn-accent {
+            background: rgba(168, 85, 247, 0.12);
+            border-color: rgba(168, 85, 247, 0.3);
+            color: #d8b4fe;
+        }
+
+        .btn-accent:hover {
+            background: rgba(168, 85, 247, 0.22);
+            border-color: rgba(168, 85, 247, 0.5);
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.2);
+            color: #fda4af;
+            padding: 4px 9px;
+            font-size: 0.72rem;
+            border-radius: 6px;
+        }
+
+        .btn-danger:hover {
+            background: rgba(244, 63, 94, 0.2);
+            border-color: rgba(244, 63, 94, 0.4);
+            color: #fff;
+        }
+
+        /* Services List inside Card */
+        .services-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .services-table th {
+            text-align: left;
+            padding: 0.6rem 0.6rem;
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .services-table td {
+            padding: 0.8rem 0.6rem;
+            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+        }
+
+        .services-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge-mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 2px 7px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: var(--text-primary);
+        }
+
+        .badge-green {
+            color: var(--emerald-green);
+        }
+
+        .badge-purple {
+            color: #d8b4fe;
+        }
+
+        /* Terminal Modal (Clean Raycast style) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 1.5rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            width: 100%;
+            max-width: 720px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+            animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalPop {
+            0% { opacity: 0; transform: scale(0.96); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            padding: 1.2rem 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+
+        .term-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .term-input:focus {
+            border-color: var(--accent-purple);
+        }
+
+        .term-output {
+            background: #050507;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            color: #d4d4d8;
+            min-height: 180px;
+            max-height: 350px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        /* Toast */
+        #notification {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(24, 24, 28, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 0.9rem 1.4rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: translateY(160%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 200;
+            font-size: 0.85rem;
+            backdrop-filter: blur(16px);
+        }
+
+        #notification.show {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Exact CosmicDust Particle Field from Portfolio -->
+    <canvas id="dust-canvas"></canvas>
+
+    <div class="content-layer">
+        
+        <!-- Top Navigation -->
+        <nav class="top-nav">
+            <div class="brand-badge">
+                <img src="/favicon.ico" alt="Dust Studio">
+                <span style="color:#fff; font-weight:600;">DustOps</span>
+                <span style="color:var(--text-muted);">|</span>
+                <span>Systems Control</span>
+            </div>
+            <div class="nav-right">
+                <div class="brand-badge">
+                    <span class="pulse-dot"></span>
+                    <span>Node Online</span>
+                    <span style="color:var(--text-muted); font-size:0.75rem;" id="nav-sync-time">--</span>
+                </div>
+                <button class="btn" onclick="fetchData()">
+                    <span>Yenile</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Hero Header matching dust-studio.com -->
+        <section class="hero">
+            <div class="status-pill">
+                <span class="pulse-dot"></span>
+                <span>Active Infrastructure Control Matrix</span>
+            </div>
+
+            <h1>Systems & Full-Stack Infrastructure.</h1>
+            <div class="subtitle">Yönetilen bulut ve mikroservisler:</div>
+            
+            <div class="gradient-typewriter">
+                <span id="typewriter-text">masaüstü araçlarından SaaS ürünlerine.</span>
+                <span class="cursor-blink"></span>
+            </div>
+
+            <p class="desc">
+                Uçtan uca sistem yönetimi, mikroservis izleme ve güvenli kabuk koşturma katmanı.
+                DustOps Core Agent üzerinden tüm servislerin gerçek zamanlı kaynak takibi ve hedefli komut çalıştırma merkezi.
+            </p>
+
+            <!-- Tech Badges from portfolio -->
+            <div class="tech-pill-row">
+                <span class="tech-pill">⚡ FastAPI</span>
+                <span class="tech-pill">🌐 Next.js</span>
+                <span class="tech-pill">🐍 Python</span>
+                <span class="tech-pill">🔷 TypeScript</span>
+                <span class="tech-pill">⚙️ PM2</span>
+                <span class="tech-pill">🚀 C++20 / NVAPI</span>
+                <span class="tech-pill">🔒 Basic Auth</span>
+                <span class="tech-pill">🛡️ Discord API</span>
+                <span class="tech-pill">🐧 Linux VDS</span>
+            </div>
+        </section>
+
+        <!-- System Resource Metrics -->
+        <div class="metrics-strip">
+            <div class="metric-card">
+                <div class="header">
+                    <span>CPU Load</span>
+                    <span id="lbl-cpu-p">0%</span>
+                </div>
+                <div class="value" id="lbl-cpu">0.0%</div>
+                <div class="metric-progress">
+                    <div class="metric-fill" id="fill-cpu"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="header">
+                    <span>RAM Utilization</span>
+                    <span id="lbl-ram-p">0%</span>
+                </div>
+                <div class="value" id="lbl-ram">0 MB</div>
+                <div class="metric-progress">
+                    <div class="metric-fill" id="fill-ram"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="header">
+                    <span>Disk Storage</span>
+                    <span id="lbl-disk-p">0%</span>
+                </div>
+                <div class="value" id="lbl-disk">0 GB</div>
+                <div class="metric-progress">
+                    <div class="metric-fill" id="fill-disk"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Header -->
+        <div class="section-header">
+            <h2 class="section-title">Registered Project Clusters</h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted);" id="lbl-project-counter">0 Projects Active</span>
+        </div>
+
+        <!-- Projects List -->
+        <div class="projects-grid" id="projects-container">
+            <p style="text-align: center; color: var(--text-muted); padding: 3rem;">Yükleniyor...</p>
+        </div>
+
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification">İşlem Tamamlandı</div>
+
+    <!-- Terminal Exec Modal -->
+    <div class="modal-overlay" id="execModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modalProjectTitle" style="font-size: 1rem; font-weight: 600; color: #fff;">Shell Command Runner</h3>
+                    <p style="font-size: 0.75rem; color: var(--text-muted);" id="modalProjectCwd">/root</p>
+                </div>
+                <button class="btn" onclick="closeExecModal()" style="padding: 4px 10px;">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="termCmdInput" class="term-input" placeholder="Komut yazın (örn: git pull && npm run build)..." onkeydown="if(event.key==='Enter') runExecCommand()">
+                    <button class="btn btn-accent" onclick="runExecCommand()">Çalıştır</button>
+                </div>
+                <div class="term-output" id="termOutputText">Hazır. Komutu girip 'Çalıştır' butonuna basın...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ─── Cosmic Dust Particle Simulation (Exact algorithm from dust-studio.com) ───
+        (function initCosmicDust() {
+            const canvas = document.getElementById('dust-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            let width = window.innerWidth;
+            let height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+
+            const particleCount = 1400;
+            const particles = [];
+            const mouse = { x: width / 2, y: height / 2 };
+
+            window.addEventListener('mousemove', e => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
+
+            class Particle {
+                constructor() {
+                    this.t = Math.random() * Math.PI * 2;
+                    const maxThickness = 140;
+                    const r = Math.pow(Math.random(), 3) * maxThickness;
+                    const angle = Math.random() * Math.PI * 2;
+
+                    this.targetOffsetX = Math.cos(angle) * r;
+                    this.targetOffsetY = Math.sin(angle) * (r * 0.5);
+                    this.currentOffsetX = this.targetOffsetX;
+                    this.currentOffsetY = this.targetOffsetY;
+                    this.x = 0;
+                    this.y = 0;
+
+                    const sinT = Math.sin(this.t);
+                    this.isCore = Math.abs(sinT) > 0.8 && r < 40;
+                    this.size = this.isCore ? Math.random() * 1.5 + 0.5 : Math.random() * 1.2 + 0.2;
+
+                    if (this.isCore) {
+                        this.color = `rgba(255, 255, 255, ${Math.random() * 0.8 + 0.2})`;
+                    } else {
+                        const colors = [
+                            `rgba(167, 139, 250, ${Math.random() * 0.7 + 0.3})`, // purple
+                            `rgba(96, 165, 250, ${Math.random() * 0.7 + 0.3})`,  // blue
+                            `rgba(232, 121, 249, ${Math.random() * 0.7 + 0.3})`, // pink
+                            `rgba(255, 255, 255, ${Math.random() * 0.4 + 0.1})`  // soft white
+                        ];
+                        this.color = colors[Math.floor(Math.random() * colors.length)];
+                    }
+
+                    this.speed = (Math.random() * 0.2 + 0.05) * 0.001;
+                    if (Math.random() > 0.5) this.speed *= -1;
+                }
+
+                update(globalRotation, scale) {
+                    this.t += this.speed;
+                    const cosT = Math.cos(this.t);
+                    const sinT = Math.sin(this.t);
+                    const denom = 1 + sinT * sinT;
+
+                    let bx = (scale * cosT) / denom;
+                    let by = (scale * sinT * cosT) / denom;
+
+                    const dx = mouse.x - this.x;
+                    const dy = mouse.y - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const interactionRadius = 120;
+
+                    if (dist < interactionRadius) {
+                        const force = Math.pow((interactionRadius - dist) / interactionRadius, 2);
+                        this.currentOffsetX -= (dx * force * 0.1) + (dy * force * 0.15);
+                        this.currentOffsetY -= (dy * force * 0.1) - (dx * force * 0.15);
+                        this.t += force * 0.0025 * Math.sign(this.speed);
+                    }
+
+                    this.currentOffsetX += (this.targetOffsetX - this.currentOffsetX) * 0.015;
+                    this.currentOffsetY += (this.targetOffsetY - this.currentOffsetY) * 0.015;
+
+                    bx += this.currentOffsetX;
+                    by += this.currentOffsetY;
+
+                    const rx = bx * Math.cos(globalRotation) - by * Math.sin(globalRotation);
+                    const ry = bx * Math.sin(globalRotation) + by * Math.cos(globalRotation);
+
+                    const tiltX = 1.0;
+                    const tiltY = 0.5;
+
+                    this.x = width / 2 + (rx * tiltX);
+                    this.y = height / 2 + (ry * tiltY);
+                }
+
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.size, this.size);
+                }
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+
+            let startTime = Date.now();
+            function animate() {
+                const time = (Date.now() - startTime) / 1000;
+                const globalRotation = time * 0.05;
+                const currentScale = Math.max(width, height) * 0.36;
+
+                ctx.clearRect(0, 0, width, height);
+                ctx.globalCompositeOperation = 'screen';
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update(globalRotation, currentScale);
+                    particles[i].draw();
+                }
+                ctx.globalCompositeOperation = 'source-over';
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+            });
+        })();
+
+        // ─── Typewriter Effect ───
+        (function initTypewriter() {
+            const phrases = [
+                "masaüstü araçlarından SaaS ürünlerine.",
+                "mikroservislerden bulut altyapısına.",
+                "düşük gecikmeli sistem mimarilerine."
+            ];
+            let phraseIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            const el = document.getElementById("typewriter-text");
+
+            function tick() {
+                const current = phrases[phraseIndex];
+                if (isDeleting) {
+                    el.innerText = current.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    el.innerText = current.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+
+                let speed = isDeleting ? 40 : 80;
+
+                if (!isDeleting && charIndex === current.length) {
+                    speed = 2200; // Pause at end
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    speed = 400;
+                }
+
+                setTimeout(tick, speed);
+            }
+            setTimeout(tick, 1000);
+        })();
+
+        // ─── Dashboard Data & Actions ───
+        let currentExecProjectId = null;
+
+        function showNotification(msg, isError=false) {
+            const notif = document.getElementById('notification');
+            notif.innerText = msg;
+            notif.style.borderColor = isError ? 'rgba(244, 63, 94, 0.4)' : 'rgba(168, 85, 247, 0.4)';
+            notif.style.color = isError ? '#fda4af' : '#d8b4fe';
+            notif.classList.add('show');
+            setTimeout(() => notif.classList.remove('show'), 3500);
+        }
+
+        async function apiCall(endpoint, method='GET', body=null) {
+            try {
+                const options = { method };
+                if (body) {
+                    options.headers = { 'Content-Type': 'application/json' };
+                    options.body = JSON.stringify(body);
+                }
+                const res = await fetch(endpoint, options);
+                if (res.status === 401) return null;
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || data.error || 'API Hatası');
+                return data;
+            } catch (err) {
+                console.error(err);
+                return null;
+            }
+        }
+
+        async function restartProject(id, name) {
+            if (!confirm(`"${name}" projesinin tüm servisleri yeniden başlatılsın mı?`)) return;
+            showNotification(`Yeniden başlatılıyor: ${name}...`);
+            const res = await apiCall(`/projects/${id}/restart`, 'POST');
+            if (res && res.success) {
+                showNotification(res.detail || `${name} başarıyla yeniden başlatıldı.`);
+                setTimeout(fetchData, 2000);
+            } else {
+                showNotification(`Yeniden başlatma başarısız: ${res ? res.detail : 'Bağlantı hatası'}`, true);
+            }
+        }
+
+        async function killProcess(pid) {
+            if (!confirm(`PID ${pid} sürecini sonlandırmak istediğinize emin misiniz?`)) return;
+            const res = await apiCall(`/kill/${pid}`, 'POST');
+            if (res && res.success) {
+                showNotification(res.detail || `Süreç (PID ${pid}) sonlandırıldı.`);
+                fetchData();
+            } else {
+                showNotification("Süreç sonlandırılamadı.", true);
+            }
+        }
+
+        function openExecModal(id, name, cwd) {
+            currentExecProjectId = id;
+            document.getElementById('modalProjectTitle').innerText = `Shell Exec: ${name}`;
+            document.getElementById('modalProjectCwd').innerText = `Dizin: ${cwd}`;
+            document.getElementById('termCmdInput').value = '';
+            document.getElementById('termOutputText').innerText = `Hazır. '${cwd}' dizininde koşturulacak komutu yazın...`;
+            document.getElementById('execModal').classList.add('active');
+            setTimeout(() => document.getElementById('termCmdInput').focus(), 100);
+        }
+
+        function closeExecModal() {
+            document.getElementById('execModal').classList.remove('active');
+        }
+
+        async function runExecCommand() {
+            const cmd = document.getElementById('termCmdInput').value.trim();
+            if (!cmd || !currentExecProjectId) return;
+
+            const outBox = document.getElementById('termOutputText');
+            outBox.innerText = `⏳ Çalıştırılıyor: ${cmd}...\nLütfen bekleyin...`;
+
+            const res = await apiCall(`/projects/${currentExecProjectId}/exec`, 'POST', { command: cmd });
+            if (res) {
+                let text = `Exit Code: ${res.exit_code}\n\n`;
+                if (res.stdout) text += `── STDOUT ──\n${res.stdout}\n`;
+                if (res.stderr) text += `── STDERR ──\n${res.stderr}\n`;
+                if (res.error) text += `── HATA ──\n${res.error}\n`;
+                if (!res.stdout && !res.stderr && !res.error) text += `(Komut sessizce tamamlandı)`;
+                outBox.innerText = text;
+            } else {
+                outBox.innerText = `❌ Komut zaman aşımına uğradı veya hata oluştu.`;
+            }
+        }
+
+        async function fetchData() {
+            // Metrics
+            const metrics = await apiCall('/metrics');
+            if (metrics) {
+                document.getElementById('lbl-cpu').innerText = `${metrics.cpu_percent.toFixed(1)}%`;
+                document.getElementById('lbl-cpu-p').innerText = `${metrics.cpu_percent.toFixed(0)}%`;
+                document.getElementById('fill-cpu').style.width = `${Math.min(metrics.cpu_percent, 100)}%`;
+
+                document.getElementById('lbl-ram').innerText = `${Math.round(metrics.ram_used_mb)} MB`;
+                document.getElementById('lbl-ram-p').innerText = `${metrics.ram_percent.toFixed(0)}%`;
+                document.getElementById('fill-ram').style.width = `${Math.min(metrics.ram_percent, 100)}%`;
+
+                document.getElementById('lbl-disk').innerText = `${metrics.disk_used_gb.toFixed(1)} GB`;
+                document.getElementById('lbl-disk-p').innerText = `${metrics.disk_percent.toFixed(0)}%`;
+                document.getElementById('fill-disk').style.width = `${Math.min(metrics.disk_percent, 100)}%`;
+
+                document.getElementById('nav-sync-time').innerText = new Date().toLocaleTimeString();
+            }
+
+            // Projects
+            const projects = await apiCall('/projects');
+            if (projects) {
+                document.getElementById('lbl-project-counter').innerText = `${projects.length} Projects Active`;
+                const container = document.getElementById('projects-container');
+                container.innerHTML = '';
+
+                projects.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'project-panel';
+
+                    const isHealthy = p.is_healthy;
+                    const healthTag = isHealthy
+                        ? `<span class="health-tag health-healthy"><span class="pulse-dot"></span>Healthy</span>`
+                        : `<span class="health-tag health-degraded">Degraded</span>`;
+
+                    let rows = '';
+                    p.services.forEach(s => {
+                        const isRunning = s.status === 'running';
+                        const dotClass = isRunning
+                            ? `<span class="pulse-dot"></span>`
+                            : `<span style="width:7px;height:7px;border-radius:50%;background:#f43f5e;display:inline-block;"></span>`;
+
+                        const statusText = isRunning
+                            ? `<span style="color:var(--emerald-green);font-weight:600;">Running</span>`
+                            : `<span style="color:var(--rose-red);">Stopped</span>`;
+
+                        const pidBadge = s.process
+                            ? `<span class="badge-mono badge-purple">${s.process.pid}</span>`
+                            : `<span style="color:var(--text-muted);">—</span>`;
+
+                        const portBadge = (s.process && s.process.port)
+                            ? `<span class="badge-mono badge-green">:${s.process.port}</span>`
+                            : (s.port ? `<span class="badge-mono">:${s.port}</span>` : `<span style="color:var(--text-muted);">—</span>`);
+
+                        const ramStr = s.process ? `${s.process.ram_mb.toFixed(1)} MB` : '—';
+                        const cpuStr = s.process ? `${s.process.cpu_percent.toFixed(1)}%` : '—';
+
+                        const actionBtn = (s.process && s.process.pid)
+                            ? `<button class="btn btn-danger" onclick="killProcess(${s.process.pid})">Kill</button>`
+                            : `<span style="color:var(--text-muted);font-size:0.75rem;">—</span>`;
+
+                        rows += `
+                            <tr>
+                                <td style="width:24px;">${dotClass}</td>
+                                <td style="color:#fff;font-weight:600;">${s.name}</td>
+                                <td>${statusText}</td>
+                                <td>${pidBadge}</td>
+                                <td>${portBadge}</td>
+                                <td>${ramStr}</td>
+                                <td>${cpuStr}</td>
+                                <td style="text-align:right;">${actionBtn}</td>
+                            </tr>
+                        `;
+                    });
+
+                    card.innerHTML = `
+                        <div class="project-panel-header">
+                            <div>
+                                <div class="project-title-box">
+                                    <span class="project-name">${p.name}</span>
+                                    ${healthTag}
+                                </div>
+                                <div style="margin-top:6px;">
+                                    <span class="project-cwd-badge">${p.cwd}</span>
+                                </div>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-accent" onclick="restartProject('${p.id}', '${p.name.replace(/'/g, "\\'")}')">
+                                    <span>🔄 Restart</span>
+                                </button>
+                                <button class="btn" onclick="openExecModal('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.cwd.replace(/'/g, "\\'")}')">
+                                    <span>⚡ Exec</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table class="services-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Service</th>
+                                        <th>Status</th>
+                                        <th>PID</th>
+                                        <th>Port</th>
+                                        <th>RAM</th>
+                                        <th>CPU</th>
+                                        <th style="text-align:right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rows}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        // Init & Auto Refresh
+        fetchData();
+        setInterval(fetchData, 4000);
+    </script>
+</body>
+</html>
