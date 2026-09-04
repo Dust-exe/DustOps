@@ -435,12 +435,20 @@ class DustOpsTUI(App):
         self.push_screen(CommandModal(project_id=proj_id, project_name=proj_name, project_cwd=proj_cwd))
 
     def action_show_logs(self) -> None:
-        """Show details and process/service snapshot."""
+        """Show details, process/service snapshot, and live PM2 logs."""
         node = self.query_one(Tree).cursor_node
         data = node.data if node else None
         if not data:
             self.notify("Önce bir öğe seçin.", severity="warning")
             return
+
+        proj_id = data.get("id") or (data.get("parent_proj", {}).get("id") if data.get("type") == "service" else None)
+        log_text = ""
+        if proj_id:
+            self.notify(f"📋 '{data.get('name')}' logları çekiliyor...", severity="information")
+            res = api_get(f"/projects/{proj_id}/logs")
+            if res and "logs" in res:
+                log_text = res.get("logs", "")
 
         if data.get("type") == "service":
             s_raw = data.get("raw", {})
@@ -451,13 +459,11 @@ class DustOpsTUI(App):
                 f"[bold cyan]Port:[/bold cyan] {s_raw.get('port') or 'Yok'}\n"
                 f"[bold cyan]Restart Komutu:[/bold cyan] {s_raw.get('restart_cmd')}\n\n"
                 f"[bold green]── Canlı Süreç Bilgisi ──[/bold green]\n"
-                f"PID: {proc.get('pid', '—')}\n"
-                f"Süreç İsmi: {proc.get('name', '—')}\n"
-                f"Komut Satırı: {proc.get('cmdline', '—')}\n"
-                f"CPU Kullanımı: {proc.get('cpu_percent', 0)}%\n"
-                f"RAM Kullanımı: {proc.get('ram_mb', 0)} MB\n"
+                f"PID: {proc.get('pid', '—')} | CPU: {proc.get('cpu_percent', 0)}% | RAM: {proc.get('ram_mb', 0)} MB\n"
             )
-            title = f"🔍 Servis Detayları: {data.get('name')}"
+            if log_text:
+                content += f"\n[bold magenta]── 📋 Canlı PM2 Log Çıktısı (Son 80 Satır) ──[/bold magenta]\n{log_text}"
+            title = f"🔍 Servis & Log: {data.get('name')}"
         else:
             p_raw = data.get("raw", {})
             services = p_raw.get("services", [])
@@ -469,7 +475,9 @@ class DustOpsTUI(App):
                 f"[bold cyan]Genel Sağlık:[/bold cyan] {'🟢 Sağlıklı' if p_raw.get('is_healthy') else '🔴 Hata/Eksik'}\n\n"
                 f"[bold green]── Bağlı Servisler ──[/bold green]\n{s_list}\n"
             )
-            title = f"📁 Proje Detayları: {data.get('name')}"
+            if log_text:
+                content += f"\n[bold magenta]── 📋 Canlı PM2 Log Çıktısı (Son 80 Satır) ──[/bold magenta]\n{log_text}"
+            title = f"📁 Proje & Log: {data.get('name')}"
 
         self.push_screen(LogModal(title=title, content=content))
 

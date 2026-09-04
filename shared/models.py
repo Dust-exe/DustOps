@@ -96,3 +96,15 @@ class ExecResult(BaseModel):
     exit_code: int | None = None
     error: str | None = None
 
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+class LoginResponse(BaseModel):
+    success: bool
+    token: str
+    username: str
+    detail: str = ""
+
